@@ -4,19 +4,10 @@ return {
     opts = function(_, opts)
       opts.servers = opts.servers or {}
 
-      -- RUFF como LSP
-      opts.servers.ruff = {
-        cmd = { "ruff", "server" },
-        init_options = {
-          settings = {
-            logLevel = "info",
-          },
-        },
-      }
-
-      -- PYRIGHT to python
+      -- PYRIGHT TO PYTHON
       opts.servers.pyright = {
         before_init = function(_, config)
+          -- search for virtual environment in the project root directory
           local function get_python_path(workspace)
             local paths = { ".venv", "venv", "env" }
             for _, name in ipairs(paths) do
@@ -34,12 +25,21 @@ return {
         end,
 
         settings = {
-          pyright = {
-            disableOrganizeImports = true,
-          },
           python = {
             analysis = {
-              ignore = { "*" },
+              autoSearchPaths = true,
+              diagnosticMode = "workspace",
+              useLibraryCodeForTypes = true,
+              reportUnusedVariable = "warning",
+              typeCheckingMode = "basic",
+
+              linting = {
+                enabled = false, -- Desactiva todos los linters
+                pyflakesEnabled = false, -- Desactiva pyflakes
+                pycodestyleEnabled = false, -- Desactiva pycodestyle
+                pylintEnabled = false, -- Si usas pylint, desactívalo
+                autopep8Enabled = false, -- Desactiva autopep8
+              },
             },
           },
         },

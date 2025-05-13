@@ -1,3 +1,4 @@
+-- Config to show hidden files
 return {
   "folke/snacks.nvim",
   opts = {

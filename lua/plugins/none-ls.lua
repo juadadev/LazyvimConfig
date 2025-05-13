@@ -6,25 +6,26 @@ return {
     "jayp0521/mason-null-ls.nvim", -- ensure dependencies are installed
   },
   config = function()
-    local null_ls = require("null-ls")
-    local formatting = null_ls.builtins.formatting   -- to setup formatters
-    local diagnostics = null_ls.builtins.diagnostics -- to setup linters
-
     -- list of formatters & linters for mason to install
     require("mason-null-ls").setup({
       ensure_installed = {
         "checkmake",
         "prettier", -- ts/js formatter, and other files
-        "stylua",   -- lua formatter
+        "stylua", -- lua formatter
         "eslint_d", -- ts/js linter
-        "shfmt",    -- shell script formatter
-        "ruff",
+        "shfmt", -- shell script formatter
+        "ruff", -- format and linter to python
       },
       -- auto-install configured formatters & linters (with null-ls)
       automatic_installation = true,
     })
 
+    local null_ls = require("null-ls")
+    local formatting = null_ls.builtins.formatting -- to setup formatters
+    local diagnostics = null_ls.builtins.diagnostics -- to setup linters
     local sources = {
+      require("none-ls.formatting.ruff").with({ extra_args = { "--extend-select", "I" } }),
+      require("none-ls.formatting.ruff_format"),
       diagnostics.checkmake,
       formatting.prettier.with({
         filetypes = {
@@ -43,10 +44,9 @@ return {
       formatting.stylua,
       formatting.shfmt.with({ args = { "-i", "4" } }),
       formatting.terraform_fmt,
-      require("none-ls.formatting.ruff").with({ extra_args = { "--extend-select", "I" } }),
-      require("none-ls.formatting.ruff_format"),
     }
 
+    -- FORMATTING THE FILE ON SAVE
     local augroup = vim.api.nvim_create_augroup("LspFormatting", {})
     null_ls.setup({
       -- debug = true, -- Enable debug mode. Inspect logs with :NullLsLog.
@@ -66,11 +66,11 @@ return {
       end,
     })
 
-    -- Desactiva diagnosticos en archivos .env automáticamente
+    -- DEACTIVATE DIAGNOSTICS IN .ENV FILE
     vim.api.nvim_create_autocmd({ "BufRead", "BufNewFile" }, {
       pattern = { ".env*" },
       callback = function()
-        vim.diagnostic.disable(0)
+        vim.diagnostic.enable(false)
       end,
     })
   end,

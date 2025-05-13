@@ -8,7 +8,6 @@ return {
         "shellcheck",
         "shfmt",
         "pyright", -- type checker python
-        "ruff-lsp", -- LSP for ruff python
         "ruff", -- formatter + linter python
       },
     },
